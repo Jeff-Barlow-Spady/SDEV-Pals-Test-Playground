@@ -1,0 +1,166 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SDEV2301 xUnit Assertions — Quick Cheat Card</title>
+  <style>
+    :root { --nait-blue:#004990; --nait-cyan:#0082b8; --ink:#1f2933; --line:#c9d8e5; --paper:#fff; --soft:#eef6fb; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#edf1f4; color:var(--ink); font:16px/1.48 Arial, Helvetica, sans-serif; }
+    main { max-width:1000px; margin:24px auto; padding:34px 42px 48px; background:var(--paper); border-top:10px solid var(--nait-blue); box-shadow:0 3px 16px rgba(0,0,0,.12); }
+    h1 { margin:0 0 8px; color:var(--nait-blue); font-size:2rem; line-height:1.15; }
+    h2 { margin:28px 0 10px; color:var(--nait-blue); font-size:1.35rem; border-bottom:2px solid var(--line); padding-bottom:4px; }
+    p { margin:8px 0 12px; }
+    .lead { font-size:1.05rem; }
+    .callout { margin:16px 0; padding:12px 16px; border-left:6px solid var(--nait-cyan); background:var(--soft); }
+    code, pre { font-family:Consolas, "Courier New", monospace; }
+    code { background:#f2f4f6; padding:.08em .28em; border-radius:3px; }
+    pre { margin:10px 0 16px; padding:14px 16px; overflow:auto; background:#f6f8fa; border:1px solid #d8dee4; border-radius:5px; line-height:1.42; }
+    pre code { padding:0; background:transparent; }
+    table { width:100%; border-collapse:collapse; margin:10px 0 18px; }
+    th, td { border:1px solid var(--line); padding:9px 11px; text-align:left; vertical-align:top; }
+    th { color:#fff; background:var(--nait-blue); }
+    tr:nth-child(even) td { background:#f7fafc; }
+    ul { margin:8px 0 14px 1.25rem; padding:0; }
+    li { margin:5px 0; }
+    .checklist { list-style:none; margin-left:0; }
+    .checklist li::before { content:"☐"; margin-right:.55rem; color:var(--nait-blue); font-weight:bold; }
+    .small { color:#455664; font-size:.92rem; }
+    @media print { body { background:#fff; } main { max-width:none; margin:0; box-shadow:none; padding:20px; } h2 { break-after:avoid; } pre, table { break-inside:avoid; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>SDEV2301 xUnit Assertions — Quick Cheat Card</h1>
+  <p class="lead">Use this card while writing tests with the course xUnit project. Examples are compatible with the course package version, xUnit 2.9.3.</p>
+
+  <h2>Test attributes</h2>
+  <pre><code>[Fact]          // One test case
+[Theory]        // The same behaviour checked with supplied data
+[InlineData()]  // One data row for a Theory</code></pre>
+
+  <h2>Arrange — Act — Assert</h2>
+  <pre><code>// Arrange
+var circle = new Circle(5);
+
+// Act
+var area = circle.GetArea();
+
+// Assert
+Assert.Equal(78.54, area, precision: 2);</code></pre>
+  <p>AAA is a useful reading and organization pattern. Short tests may combine Arrange and Act in one clear statement.</p>
+
+  <h2>Choose the assertion that matches the evidence</h2>
+  <table>
+    <thead><tr><th>Evidence to check</th><th>Useful assertion</th></tr></thead>
+    <tbody>
+      <tr><td>Exact expected value</td><td><code>Assert.Equal(expected, actual)</code></td></tr>
+      <tr><td>Values must differ</td><td><code>Assert.NotEqual(notExpected, actual)</code></td></tr>
+      <tr><td>Condition must be true or false</td><td><code>Assert.True(condition)</code> / <code>Assert.False(condition)</code></td></tr>
+      <tr><td>Value must be missing or present</td><td><code>Assert.Null(value)</code> / <code>Assert.NotNull(value)</code></td></tr>
+      <tr><td>Text or collection must contain an item</td><td><code>Assert.Contains(expected, actual)</code></td></tr>
+      <tr><td>Text or collection must not contain an item</td><td><code>Assert.DoesNotContain(notExpected, actual)</code></td></tr>
+      <tr><td>Collection must be empty or non-empty</td><td><code>Assert.Empty(collection)</code> / <code>Assert.NotEmpty(collection)</code></td></tr>
+      <tr><td>Value must be within an acceptable range</td><td><code>Assert.InRange(actual, low, high)</code></td></tr>
+      <tr><td>An action must throw an exception</td><td><code>Assert.Throws&lt;TException&gt;(() =&gt; action)</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Exact and floating-point values</h2>
+  <pre><code>Assert.Equal(expected, actual);
+Assert.NotEqual(notExpected, actual);</code></pre>
+  <p>For floating-point results, specify suitable tolerance rather than relying on exact binary equality.</p>
+  <pre><code>// precision is the number of decimal places
+Assert.Equal(78.54, area, precision: 2);
+
+// Use a range when the acceptable limits are part of the requirement
+Assert.InRange(area, 78.53, 78.55);</code></pre>
+
+  <h2>Boolean and null checks</h2>
+  <pre><code>Assert.True(account.Balance &gt;= 0);
+Assert.False(order.IsCancelled);
+
+Assert.Null(result);
+Assert.NotNull(customer);</code></pre>
+
+  <h2>Strings and collections</h2>
+  <pre><code>Assert.Contains("expected text", actualString);
+Assert.StartsWith("Hello", actualString);
+Assert.EndsWith("!", actualString);
+
+Assert.Empty(items);
+Assert.NotEmpty(items);
+Assert.Contains(expectedItem, items);
+Assert.DoesNotContain(unwantedItem, items);</code></pre>
+
+  <h2>Expected exceptions</h2>
+  <pre><code>Assert.Throws&lt;InvalidOperationException&gt;(() =&gt;
+    account.Withdraw(200));</code></pre>
+  <p>Capture the exception only when another required detail should be checked.</p>
+  <pre><code>var ex = Assert.Throws&lt;ArgumentException&gt;(() =&gt;
+    account.Deposit(-1));
+
+Assert.Equal("amount", ex.ParamName);</code></pre>
+  <div class="callout"><strong>Do not catch the exception manually inside the test.</strong> Do not require an exact exception message unless the message itself is specified behaviour; message wording can change.</div>
+
+  <h2>Parameterized tests</h2>
+  <p>Use a Theory when the same behaviour should hold for several data rows.</p>
+  <pre><code>[Theory]
+[InlineData(1.0, 3.14)]
+[InlineData(5.0, 78.54)]
+public void GetArea_WithDifferentRadii_ReturnsExpectedArea(
+    double radius, double expected)
+{
+    var circle = new Circle(radius);
+
+    Assert.Equal(expected, circle.GetArea(), precision: 2);
+}</code></pre>
+
+  <h2>Multiple related assertions</h2>
+  <p>One logical behaviour may require more than one related assertion. Keep unrelated behaviours in separate tests.</p>
+  <pre><code>Assert.Multiple(
+    () =&gt; Assert.Equal(32, rectangle.GetArea()),
+    () =&gt; Assert.Equal(24, rectangle.GetPerimeter())
+);</code></pre>
+  <p class="small"><code>Assert.Multiple</code> is supported by the course xUnit package, but it is optional. Two ordinary related assertions are also acceptable in an introductory test.</p>
+
+  <h2>Test names</h2>
+  <p>A useful pattern is <code>Member_Scenario_ExpectedResult</code>.</p>
+  <pre><code>Constructor_ValidName_SetsNames
+FullName_ValidName_ReturnsLastCommaFirst
+Withdraw_AmountExceedsBalance_Throws</code></pre>
+
+  <h2>Unit testing and TDD</h2>
+  <ul>
+    <li>Unit testing can be added to behaviour that already exists.</li>
+    <li>In test-driven development, write one focused test before adding the next small behaviour.</li>
+    <li>TDD cycle: <strong>Red</strong> — observe the intended failure; <strong>Green</strong> — add the smallest clear code that passes; <strong>Refactor</strong> — improve without changing behaviour, then run all tests again.</li>
+    <li>“Fails first” is a TDD check, not a requirement that every unit test in every project must have been written first.</li>
+  </ul>
+
+  <h2>Common problems to avoid</h2>
+  <ul>
+    <li>Reversing <code>expected</code> and <code>actual</code> in <code>Assert.Equal</code>.</li>
+    <li>Comparing floating-point results without an appropriate precision or range.</li>
+    <li>Printing a result instead of using an assertion.</li>
+    <li>Catching exceptions manually instead of using <code>Assert.Throws&lt;TException&gt;</code>.</li>
+    <li>Combining unrelated behaviours in one test.</li>
+    <li>Testing only trivial auto-properties instead of validation or observable behaviour.</li>
+    <li>Using unexplained values that make the scenario difficult to understand.</li>
+    <li>Running only the newest test after production code changes; use <strong>Run All</strong> to detect regressions.</li>
+  </ul>
+
+  <h2>Before submitting</h2>
+  <ul class="checklist">
+    <li>The test name explains the member, scenario, and expected result.</li>
+    <li>Arrange, Act, and Assert are easy to identify.</li>
+    <li>The assertion matches the required evidence.</li>
+    <li>The test checks observable behaviour, not private implementation details.</li>
+    <li>Normal, boundary, and invalid cases are considered where relevant.</li>
+    <li>All tests pass.</li>
+    <li>For a TDD task, the intended Red was observed before production code was added.</li>
+  </ul>
+</main>
+</body>
+</html>

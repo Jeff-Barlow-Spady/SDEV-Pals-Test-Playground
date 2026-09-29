@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html><head><link rel="stylesheet" href="https://s.brightspace.com/lib/fonts/0.6.1/fonts.css"><link rel="stylesheet" href="https://templates.lcs.brightspace.com/lib/assets/css/styles.min.css"><link rel="stylesheet" href="/d2l/le/contentstyler/6606/files/View" data-override="override"></head><body style="color: rgb(32, 33, 34); font-family: Lato, sans-serif; font-size: 19px;"><h1 id="writing-good-unit-tests" dir="auto" data-line="0">Writing Good Unit Tests</h1>
+<h2 id="bad-vs-good-examples" dir="auto" data-line="2">Bad vs Good Examples</h2>
+<p dir="auto" data-line="4">This handout shows&nbsp;<strong>common testing mistakes</strong>&nbsp;and how to fix them using&nbsp;<strong>xUnit best practices</strong>&nbsp;expected in SDEV2301.</p>
+<h2 id="1️⃣-bad-vs-good-test-structure" dir="auto" data-line="7">1️⃣ Bad vs Good Test Structure</h2>
+<h3 id="-bad-test-low-value" dir="auto" data-line="9">❌ Bad Test (Low Value)</h3>
+<pre><code dir="auto" data-line="11">[Fact]
+public void Test1()
+{
+    var calc = new DiscountCalculator();
+
+    var r1 = calc.Calculate(100, "Regular");
+    var r2 = calc.Calculate(100, "VIP");
+
+    if (r1 != 90)
+        throw new Exception("Wrong result");
+
+    if (r2 != 80)
+        throw new Exception("Wrong result");
+}
+</code></pre>
+<p dir="auto" data-line="28"><strong>Problems</strong></p>
+<ul dir="auto" data-line="30">
+<li dir="auto" data-line="30">Vague test name</li>
+<li dir="auto" data-line="31">Multiple behaviors in one test</li>
+<li dir="auto" data-line="32">Manual checks instead of assertions</li>
+<li dir="auto" data-line="33">Hard to tell what failed</li>
+</ul>
+<h3 id="-good-test-clear--scalable" dir="auto" data-line="36">✅ Good Test (Clear &amp; Scalable)</h3>
+<pre><code dir="auto" data-line="38">[Theory]
+[InlineData(100, "Regular", 90)]
+[InlineData(100, "VIP", 80)]
+public void Calculate_ValidCustomerTypes_ReturnsDiscount(
+    double price,
+    string type,
+    double expected)
+{
+    // Arrange
+    var calc = new DiscountCalculator();
+
+    // Act
+    var result = calc.Calculate(price, type);
+
+    // Assert
+    Assert.Equal(expected, result);
+}
+</code></pre>
+<p dir="auto" data-line="58"><strong>Why this is better</strong></p>
+<ul dir="auto" data-line="60">
+<li dir="auto" data-line="60">Descriptive name</li>
+<li dir="auto" data-line="61">One behavior, many cases</li>
+<li dir="auto" data-line="62">Uses&nbsp;<code>[Theory]</code></li>
+<li dir="auto" data-line="63">Clear Arrange–Act–Assert structure</li>
+</ul>
+<h2 id="2️⃣-bad-vs-good-fact-usage" dir="auto" data-line="65">2️⃣ Bad vs Good&nbsp;<code>[Fact]</code>&nbsp;Usage</h2>
+<h3 id="-bad-fact-usage" dir="auto" data-line="67">❌ Bad&nbsp;<code>[Fact]</code>&nbsp;Usage</h3>
+<pre><code dir="auto" data-line="69">[Fact]
+public void Calculate_Discount_Test()
+{
+    var calc = new DiscountCalculator();
+
+    Assert.Equal(90, calc.Calculate(100, "Regular"));
+    Assert.Equal(80, calc.Calculate(100, "VIP"));
+    Assert.Equal(100, calc.Calculate(100, "Other"));
+}
+</code></pre>
+<p dir="auto" data-line="81"><strong>Problems</strong></p>
+<ul dir="auto" data-line="83">
+<li dir="auto" data-line="83">Multiple scenarios in one test</li>
+<li dir="auto" data-line="84">Hard to see which case failed</li>
+<li dir="auto" data-line="85">Should be data-driven</li>
+</ul>
+<h3 id="-good-theory-usage" dir="auto" data-line="88">✅ Good&nbsp;<code>[Theory]</code>&nbsp;Usage</h3>
+<pre><code dir="auto" data-line="90">[Theory]
+[InlineData(100, "Regular", 90)]
+[InlineData(100, "VIP", 80)]
+[InlineData(100, "Other", 100)]
+public void Calculate_ReturnsCorrectAmount(
+    double price,
+    string type,
+    double expected)
+{
+    var calc = new DiscountCalculator();
+    Assert.Equal(expected, calc.Calculate(price, type));
+}
+</code></pre>
+<p dir="auto" data-line="105"><strong>Rule</strong></p>
+<blockquote dir="auto" data-line="107">
+<p dir="auto" data-line="107">If you are repeating assertions, use&nbsp;<code>[Theory]</code>.</p>
+</blockquote>
+<h2 id="3️⃣-bad-vs-good-exception-tests" dir="auto" data-line="109">3️⃣ Bad vs Good Exception Tests</h2>
+<h3 id="-bad-exception-test" dir="auto" data-line="111">❌ Bad Exception Test</h3>
+<pre><code dir="auto" data-line="113">[Fact]
+public void Divide_ByZero_Test()
+{
+    var calc = new Calculator();
+
+    try
+    {
+        calc.Divide(4, 0);
+    }
+    catch (Exception)
+    {
+        return;
+    }
+
+    Assert.True(false);
+}
+</code></pre>
+<p dir="auto" data-line="132"><strong>Problems</strong></p>
+<ul dir="auto" data-line="134">
+<li dir="auto" data-line="134">Catches any exception</li>
+<li dir="auto" data-line="135">Manual control flow</li>
+<li dir="auto" data-line="136">Test can pass for the wrong reason</li>
+</ul>
+<h3 id="-good-exception-test" dir="auto" data-line="139">✅ Good Exception Test</h3>
+<pre><code dir="auto" data-line="141">[Fact]
+public void Divide_ByZero_ThrowsDivideByZeroException()
+{
+    var calc = new Calculator();
+
+    Assert.Throws&lt;DivideByZeroException&gt;(() =&gt;
+        calc.Divide(4, 0));
+}
+</code></pre>
+<p dir="auto" data-line="152"><strong>Rule</strong></p>
+<blockquote dir="auto" data-line="154">
+<p dir="auto" data-line="154">Always assert the exact exception type.</p>
+</blockquote>
+<h2 id="4️⃣-bad-vs-good-test-naming" dir="auto" data-line="157">4️⃣ Bad vs Good Test Naming</h2>
+<h3 id="-bad-names" dir="auto" data-line="159">❌ Bad Names</h3>
+<pre><code dir="auto" data-line="161">Test1
+DiscountTest
+CalculatorWorks
+</code></pre>
+<p dir="auto" data-line="167"><strong>Problems</strong></p>
+<ul dir="auto" data-line="169">
+<li dir="auto" data-line="169">No behavior described</li>
+<li dir="auto" data-line="170">Useless when tests fail</li>
+</ul>
+<h3 id="-good-names" dir="auto" data-line="173">✅ Good Names</h3>
+<pre><code dir="auto" data-line="175">Divide_ByZero_ThrowsDivideByZeroException
+Calculate_RegularCustomer_ReturnsDiscount
+Save_NullInput_ThrowsArgumentNullException
+</code></pre>
+<p dir="auto" data-line="181"><strong>Naming Pattern</strong></p>
+<pre><code dir="auto" data-line="183">MethodName_State_ExpectedResult
+</code></pre>
+<p dir="auto" data-line="187"><strong>Rule</strong></p>
+<blockquote dir="auto" data-line="189">
+<p dir="auto" data-line="189">If you can’t tell what failed from the name, the name is wrong.</p>
+</blockquote>
+<h2 id="5️⃣-bad-vs-good-arrangeactassert-aaa" dir="auto" data-line="192">5️⃣ Bad vs Good Arrange–Act–Assert (AAA)</h2>
+<h3 id="-bad-aaa" dir="auto" data-line="194">❌ Bad AAA</h3>
+<pre><code dir="auto" data-line="196">[Fact]
+public void Add_TwoNumbers_ReturnsSum()
+{
+    var calc = new Calculator();
+    var r1 = calc.Add(3, 4);
+    Assert.Equal(7, r1);
+
+    var r2 = calc.Add(1, 2);
+    Assert.Equal(3, r2);
+}
+</code></pre>
+<p dir="auto" data-line="209"><strong>Problems</strong></p>
+<ul dir="auto" data-line="211">
+<li dir="auto" data-line="211">Multiple behaviors</li>
+<li dir="auto" data-line="212">No clear structure</li>
+<li dir="auto" data-line="213">Hard to read and extend</li>
+</ul>
+<h3 id="-good-aaa" dir="auto" data-line="215">✅ Good AAA</h3>
+<pre><code dir="auto" data-line="217">[Fact]
+public void Add_TwoNumbers_ReturnsSum()
+{
+    // Arrange
+    var calc = new Calculator();
+
+    // Act
+    var result = calc.Add(3, 4);
+
+    // Assert
+    Assert.Equal(7, result);
+}
+</code></pre>
+<p dir="auto" data-line="232"><strong>Rule</strong></p>
+<blockquote dir="auto" data-line="234">
+<p dir="auto" data-line="234">One behavior per test. Arrange → Act → Assert should be obvious.</p>
+</blockquote>
+<h2 id="6️⃣-final-rules-to-remember" dir="auto" data-line="237">6️⃣ Final Rules to Remember</h2>
+<ul dir="auto" data-line="239">
+<li dir="auto" data-line="239">Prefer&nbsp;<code>[Theory]</code>&nbsp;when testing multiple cases</li>
+<li dir="auto" data-line="240">Use clear, descriptive test names</li>
+<li dir="auto" data-line="241">Follow Arrange–Act–Assert</li>
+<li dir="auto" data-line="242">One main assertion per test</li>
+<li dir="auto" data-line="243">Tests should describe&nbsp;<strong>behavior</strong>, not implementation</li>
+<li dir="auto" data-line="244">A failing test is useful information</li>
+</ul></body></html>

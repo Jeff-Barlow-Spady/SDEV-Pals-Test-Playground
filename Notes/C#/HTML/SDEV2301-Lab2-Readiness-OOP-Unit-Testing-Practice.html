@@ -1,0 +1,444 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 2 Readiness: OOP and Unit Testing Practice Path</title>
+<style>
+  :root {
+    --nait-blue: #005eb8;
+    --nait-dark: #12344d;
+    --ink: #17212b;
+    --muted: #4b5c6b;
+    --panel: #f5f8fb;
+    --line: #d7e0e8;
+    --core: #e8f3ff;
+    --recommended: #ecf8f0;
+    --challenge: #fff5dc;
+    --extra: #f3efff;
+    --code-bg: #101923;
+    --code-ink: #edf5fb;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 24px;
+    background: #fff;
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .container { max-width: 980px; margin: 0 auto; }
+
+  h1, h2, h3 { color: var(--nait-dark); line-height: 1.2; }
+  h1 { margin: 0 0 .4rem; font-size: 2rem; }
+  h2 { margin: 1.6rem 0 .55rem; font-size: 1.35rem; }
+  h3 { margin: 1.1rem 0 .35rem; font-size: 1.08rem; }
+
+  p { margin: .45rem 0 .8rem; }
+  .lede { color: var(--muted); font-size: 1.05rem; }
+
+  .banner {
+    border-top: 8px solid var(--nait-blue);
+    border-bottom: 1px solid var(--line);
+    padding: 18px 0 14px;
+    margin-bottom: 18px;
+  }
+
+  .card {
+    margin: 14px 0;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--panel);
+  }
+
+  .card.core { border-left: 6px solid var(--nait-blue); background: var(--core); }
+  .card.recommended { border-left: 6px solid #2d8a52; background: var(--recommended); }
+  .card.challenge { border-left: 6px solid #c68400; background: var(--challenge); }
+  .card.extra { border-left: 6px solid #7356a8; background: var(--extra); }
+
+  .badge {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 9px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--nait-dark);
+    font-size: .78rem;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+
+  .callout {
+    margin: 12px 0;
+    padding: 11px 13px;
+    border-left: 4px solid var(--nait-blue);
+    border-radius: 6px;
+    background: #fff;
+  }
+
+  .warning { border-left-color: #b66a00; background: #fffaf0; }
+  .success { border-left-color: #2d8a52; background: #f4fbf6; }
+  .mono, code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+  code { font-size: .94em; }
+
+  pre {
+    margin: .7rem 0;
+    padding: 13px;
+    overflow: auto;
+    border-radius: 8px;
+    background: var(--code-bg);
+    color: var(--code-ink);
+    line-height: 1.45;
+  }
+
+  pre code { font-size: .9rem; }
+  ul, ol { margin: .35rem 0 .8rem 1.2rem; padding-left: .9rem; }
+  li { margin: .28rem 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: .8rem 0;
+    background: #fff;
+  }
+
+  th, td {
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th { background: #eaf0f5; color: var(--nait-dark); }
+  .small { color: var(--muted); font-size: .92rem; }
+  .checklist { list-style: none; margin-left: 0; padding-left: 0; }
+  .checklist li::before { content: "☐ "; font-weight: 700; }
+  .step { font-weight: 700; color: var(--nait-blue); }
+
+  @media (max-width: 640px) {
+    body { padding: 14px; }
+    h1 { font-size: 1.65rem; }
+    th, td { padding: 7px; }
+  }
+
+  @media print {
+    body { padding: 0; font-size: 10.5pt; }
+    .container { max-width: none; }
+    .card { break-inside: avoid; }
+    pre { white-space: pre-wrap; }
+  }
+</style>
+</head>
+<body>
+<main class="container">
+  <header class="banner">
+    <h1>Lab 2 Readiness: OOP and Unit Testing Practice Path</h1>
+    <p class="lede">
+      Practise C# object-oriented programming, xUnit, nullable reference types, and the
+      <strong>Red → Green → Refactor</strong> cycle before Lab 2.
+    </p>
+  </header>
+
+  <div class="callout success">
+    <strong>This is ungraded take-home practice.</strong> Complete the Core activities before Lab 2.
+    Continue with the Recommended and Challenge activities if you want more practice. Nothing needs
+    to be submitted unless your instructor says otherwise.
+  </div>
+
+  <h2>Choose Your Practice Path</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Priority</th>
+        <th>Activities</th>
+        <th>Suggested time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Core</strong></td>
+        <td><code>Book</code> and <code>BankAccount</code></td>
+        <td>60–90 minutes</td>
+      </tr>
+      <tr>
+        <td><strong>Recommended</strong></td>
+        <td><code>Rectangle</code> with parameterized tests</td>
+        <td>30–45 minutes</td>
+      </tr>
+      <tr>
+        <td><strong>Challenge</strong></td>
+        <td><code>Song</code> and <code>Playlist</code> composition</td>
+        <td>45–60 minutes</td>
+      </tr>
+      <tr>
+        <td><strong>Extra practice</strong></td>
+        <td><code>Movie</code>, <code>Student</code>, or <code>Car</code></td>
+        <td>As needed</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <section class="card">
+    <h2>One-Time Setup in Visual Studio 2026</h2>
+    <ol>
+      <li>Create an <strong>Empty Solution</strong> named <code>SDEV2301Lab2Practice</code>.</li>
+      <li>Add a <strong>Class Library</strong> project targeting <strong>.NET 10</strong>. Name it <code>OopPractice</code>.</li>
+      <li>Add an <strong>xUnit Test Project</strong> targeting <strong>.NET 10</strong>. Name it <code>OopPractice.Tests</code>.</li>
+      <li>In <code>OopPractice.Tests</code>, add a project reference to <code>OopPractice</code>.</li>
+      <li>Delete the automatically generated <code>Class1.cs</code> and <code>UnitTest1.cs</code> files.</li>
+      <li>Create a <code>Models</code> folder inside <code>OopPractice</code>.</li>
+    </ol>
+
+    <p class="small">
+      Visual Studio may create either a <code>.slnx</code> or <code>.sln</code> solution file. Either is acceptable.
+      No additional assertion package is required; use the built-in xUnit <code>Assert</code> methods.
+    </p>
+
+    <h3>Target layout</h3>
+    <pre><code>SDEV2301Lab2Practice/
+  [Visual Studio solution file]
+  OopPractice/
+    Models/
+      Book.cs
+      BankAccount.cs
+      ...
+  OopPractice.Tests/
+    BookTests.cs
+    BankAccountTests.cs
+    ...</code></pre>
+  </section>
+
+  <section class="card">
+    <h2>Use This TDD Cycle for Every Behaviour</h2>
+    <ol>
+      <li><span class="step">RED:</span> Write <strong>one</strong> test for one behaviour.</li>
+      <li>Run the test and confirm that it fails for the reason you expected—not because of an unrelated syntax or setup error.</li>
+      <li><span class="step">GREEN:</span> Write the minimum production code required to pass that test.</li>
+      <li>Use <strong>Run All Tests</strong> and confirm that all tests pass.</li>
+      <li><span class="step">REFACTOR:</span> Improve names or remove duplication without changing behaviour.</li>
+      <li>Run all tests again, then repeat the cycle for the next behaviour.</li>
+    </ol>
+
+    <div class="callout warning">
+      Do not write all the tests first and then write the entire class. Work in small test-code cycles.
+      A useful test must fail before the required behaviour is implemented.
+    </div>
+
+    <h3>Testing conventions</h3>
+    <ul>
+      <li>Organize each test using <strong>Arrange–Act–Assert</strong>.</li>
+      <li>Name tests using <code>Member_Scenario_ExpectedResult</code>.</li>
+      <li>Use <code>[Fact]</code> for one case and <code>[Theory]</code> with <code>[InlineData]</code> for repeated cases.</li>
+      <li>Use <code>Assert.Throws&lt;TException&gt;(...)</code> to test exceptions.</li>
+      <li>Use a precision or range assertion when comparing calculated <code>double</code> values.</li>
+    </ul>
+
+    <h3>Reusable test skeleton</h3>
+    <pre><code>using OopPractice.Models;
+using Xunit;
+
+namespace OopPractice.Tests;
+
+public class ExampleTests
+{
+    [Fact]
+    public void Member_Scenario_ExpectedResult()
+    {
+        // Arrange
+
+        // Act
+
+        // Assert
+    }
+}</code></pre>
+  </section>
+
+  <section class="card core">
+    <h2>Core Practice A: Book <span class="badge">Complete before Lab 2</span></h2>
+    <p><strong>Create these new files:</strong></p>
+    <ul>
+      <li>Production file: <code>OopPractice/Models/Book.cs</code></li>
+      <li>Test file: <code>OopPractice.Tests/BookTests.cs</code></li>
+    </ul>
+
+    <h3>Required behaviour</h3>
+    <ul>
+      <li><code>Title</code> is a required <code>string</code>. Blank or whitespace input throws <code>ArgumentException</code>.</li>
+      <li><code>Pages</code> is an <code>int</code> greater than zero. An invalid value throws <code>ArgumentOutOfRangeException</code>.</li>
+      <li><code>Subtitle</code> is optional and must be declared as <code>string?</code>.</li>
+      <li>The constructor receives all required values and optionally receives a subtitle.</li>
+      <li><code>DisplayTitle()</code> returns <code>"Title: Subtitle"</code> when a subtitle is present; otherwise, it returns only the title.</li>
+    </ul>
+
+    <h3>Write and pass these tests one at a time</h3>
+    <ol>
+      <li><code>Constructor_ValidValues_SetsProperties</code></li>
+      <li><code>Constructor_BlankTitle_ThrowsArgumentException</code></li>
+      <li><code>Constructor_NonPositivePages_ThrowsArgumentOutOfRangeException</code> — use a <code>[Theory]</code>.</li>
+      <li><code>DisplayTitle_SubtitleProvided_IncludesSubtitle</code></li>
+      <li><code>DisplayTitle_SubtitleMissing_ReturnsTitleOnly</code></li>
+    </ol>
+
+    <div class="callout">
+      <strong>Nullable-types reminder:</strong> use <code>string?</code> because the subtitle may be absent.
+      Handle the missing value deliberately—for example, by checking it or using <code>??</code>. Do not silence
+      nullable warnings with <code>!</code> merely to make the warning disappear.
+    </div>
+  </section>
+
+  <section class="card core">
+    <h2>Core Practice B: BankAccount <span class="badge">Complete before Lab 2</span></h2>
+    <p><strong>Create these new files:</strong></p>
+    <ul>
+      <li>Production file: <code>OopPractice/Models/BankAccount.cs</code></li>
+      <li>Test file: <code>OopPractice.Tests/BankAccountTests.cs</code></li>
+    </ul>
+
+    <h3>Required behaviour</h3>
+    <ul>
+      <li><code>AccountNumber</code> is required. Blank or whitespace input throws <code>ArgumentException</code>.</li>
+      <li><code>Balance</code> is a <code>decimal</code> that can be changed only by the class.</li>
+      <li>The opening balance defaults to <code>0m</code> and cannot be negative.</li>
+      <li><code>Deposit(decimal amount)</code> accepts only values greater than zero.</li>
+      <li><code>Withdraw(decimal amount)</code> accepts only values greater than zero.</li>
+      <li>Withdrawing more than the balance throws <code>InvalidOperationException</code> and leaves the balance unchanged.</li>
+    </ul>
+
+    <h3>Write and pass these tests one at a time</h3>
+    <ol>
+      <li><code>Constructor_NoOpeningBalance_SetsBalanceToZero</code></li>
+      <li><code>Constructor_NegativeOpeningBalance_ThrowsArgumentOutOfRangeException</code></li>
+      <li><code>Deposit_PositiveAmount_IncreasesBalance</code></li>
+      <li><code>Deposit_NonPositiveAmount_ThrowsArgumentOutOfRangeException</code> — use a <code>[Theory]</code>.</li>
+      <li><code>Withdraw_AmountWithinBalance_DecreasesBalance</code></li>
+      <li><code>Withdraw_AmountExceedsBalance_ThrowsInvalidOperationException</code></li>
+      <li><code>Withdraw_AmountExceedsBalance_LeavesBalanceUnchanged</code></li>
+    </ol>
+  </section>
+
+  <section class="card recommended">
+    <h2>Recommended Practice: Rectangle <span class="badge">More parameterized-test practice</span></h2>
+    <p><strong>Create these new files:</strong></p>
+    <ul>
+      <li>Production file: <code>OopPractice/Models/Rectangle.cs</code></li>
+      <li>Test file: <code>OopPractice.Tests/RectangleTests.cs</code></li>
+    </ul>
+
+    <h3>Required behaviour</h3>
+    <ul>
+      <li><code>Length</code> and <code>Width</code> are <code>double</code> values greater than zero.</li>
+      <li>Invalid dimensions throw <code>ArgumentOutOfRangeException</code>.</li>
+      <li><code>GetArea()</code> returns length × width.</li>
+      <li><code>GetPerimeter()</code> returns 2 × (length + width).</li>
+    </ul>
+
+    <h3>Suggested tests</h3>
+    <ul>
+      <li><code>GetArea_ValidDimensions_ReturnsExpectedArea</code> — use a <code>[Theory]</code> with at least three cases.</li>
+      <li><code>GetPerimeter_ValidDimensions_ReturnsExpectedPerimeter</code> — use a <code>[Theory]</code>.</li>
+      <li><code>Constructor_NonPositiveLength_ThrowsArgumentOutOfRangeException</code></li>
+      <li><code>Constructor_NonPositiveWidth_ThrowsArgumentOutOfRangeException</code></li>
+    </ul>
+
+    <pre><code>// Example of comparing a calculated double:
+Assert.Equal(expected, actual, precision: 2);</code></pre>
+  </section>
+
+  <section class="card challenge">
+    <h2>Challenge Practice: Playlist Composition <span class="badge">Multi-class design</span></h2>
+    <p><strong>Create these new files:</strong></p>
+    <ul>
+      <li>Production files: <code>OopPractice/Models/Song.cs</code> and <code>OopPractice/Models/Playlist.cs</code></li>
+      <li>Test files: <code>OopPractice.Tests/SongTests.cs</code> and <code>OopPractice.Tests/PlaylistTests.cs</code></li>
+    </ul>
+
+    <h3>Required behaviour</h3>
+    <ul>
+      <li><code>Song</code> requires a nonblank <code>Title</code> and <code>Artist</code>.</li>
+      <li><code>LengthInSeconds</code> must be greater than zero.</li>
+      <li><code>Playlist</code> owns a private collection of songs.</li>
+      <li><code>SongCount</code> exposes the number of songs without allowing outside code to replace the collection.</li>
+      <li><code>AddSong(Song song)</code> rejects <code>null</code> with <code>ArgumentNullException</code>.</li>
+      <li><code>TotalLengthInSeconds()</code> returns the combined length of all songs and returns zero for an empty playlist.</li>
+    </ul>
+
+    <h3>Suggested tests</h3>
+    <ul>
+      <li><code>AddSong_ValidSong_IncreasesSongCount</code></li>
+      <li><code>AddSong_NullSong_ThrowsArgumentNullException</code></li>
+      <li><code>TotalLengthInSeconds_EmptyPlaylist_ReturnsZero</code></li>
+      <li><code>TotalLengthInSeconds_MultipleSongs_ReturnsCombinedLength</code></li>
+    </ul>
+  </section>
+
+  <section class="card extra">
+    <h2>Extra Practice Menu <span class="badge">Choose only if useful</span></h2>
+    <p>Create a separate production file and matching test file for any option you choose.</p>
+
+    <h3>Movie</h3>
+    <p>
+      Create <code>Movie.cs</code> and <code>MovieTests.cs</code>. Require a nonblank title and a rating from
+      0 through 10. Use a <code>[Theory]</code> to test valid and invalid boundary values.
+    </p>
+
+    <h3>Student</h3>
+    <p>
+      Create <code>Student.cs</code> and <code>StudentTests.cs</code>. Require nonblank first name, last name,
+      and program. Add a nullable <code>PreferredName</code> and a <code>DisplayName()</code> method that uses it
+      when present.
+    </p>
+
+    <h3>Car</h3>
+    <p>
+      Create <code>Car.cs</code> and <code>CarTests.cs</code>. Require nonblank make and model, reject years before
+      1886, and override <code>ToString()</code> to return <code>"Year Make Model"</code>. Test only behaviour owned
+      by <code>Car</code>; do not write a test merely to prove that <code>List&lt;Car&gt;</code> preserves insertion order.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Responsible Use of AI</h2>
+    <p>AI tools may support this take-home practice, but they should not replace your thinking or your TDD cycle.</p>
+    <ul>
+      <li>Design and write the next test yourself before asking for help.</li>
+      <li>Use AI for explanations, hints, troubleshooting, or feedback on a small piece of code.</li>
+      <li>Do not ask AI to generate the entire exercise and all tests in one response.</li>
+      <li>Run every test yourself and verify that it fails and passes for the intended reasons.</li>
+      <li>You must be able to explain every test, assertion, exception, and production-code change.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Lab 2 Readiness Self-Check</h2>
+    <ul class="checklist">
+      <li>I can explain why production code and test code are in separate projects.</li>
+      <li>The test project has a project reference to the class library.</li>
+      <li>I can create and run <code>[Fact]</code> and <code>[Theory]</code> tests.</li>
+      <li>I use Arrange–Act–Assert and meaningful test names.</li>
+      <li>I can test an expected exception with <code>Assert.Throws&lt;TException&gt;</code>.</li>
+      <li>I can explain Red → Green → Refactor and demonstrate at least one complete cycle.</li>
+      <li>I understand the difference between <code>string</code> and <code>string?</code>.</li>
+      <li>I can run all tests and diagnose a failing test using Test Explorer.</li>
+      <li>All Core tests pass.</li>
+    </ul>
+
+    <p class="small">
+      Optional evidence for yourself: make Git commits after meaningful TDD cycles, or keep one screenshot showing
+      a useful failing test followed by the same test passing. A repository, README, and screenshot are not required
+      submissions for this practice unless your instructor asks for them.
+    </p>
+  </section>
+
+  <p class="small">
+    Work rhythm: write one failing test → implement the minimum code to pass → run all tests → refactor → repeat.
+  </p>
+</main>
+</body>
+</html>

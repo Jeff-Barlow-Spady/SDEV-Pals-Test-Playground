@@ -1,0 +1,304 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SDEV2301 Lesson 13 Student Guide — Introduction to LINQ and Collection Queries</title>
+  <style>
+    :root {
+      --nait-blue:#005eb8;
+      --nait-dark-blue:#004990;
+      --nait-cyan:#0082b8;
+      --nait-gold:#f2a900;
+      --ink:#20262e;
+      --muted:#52616d;
+      --line:#c9d8e5;
+      --soft:#eef6fb;
+      --code:#17212b;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:#edf1f4; color:var(--ink); font:16px/1.55 Arial, Helvetica, sans-serif; }
+    main { max-width:1040px; margin:24px auto; padding:36px 44px 52px; background:#fff; border-top:10px solid var(--nait-dark-blue); box-shadow:0 3px 16px rgba(0,0,0,.12); }
+    h1 { margin:0 0 8px; padding-bottom:12px; color:var(--nait-blue); border-bottom:8px solid var(--nait-gold); font-size:2rem; line-height:1.15; }
+    .metadata { margin:12px 0 22px; color:var(--muted); }
+    h2 { margin:32px 0 10px; padding-bottom:5px; color:var(--nait-blue); font-size:1.38rem; border-bottom:2px solid var(--line); }
+    h3 { margin:23px 0 8px; color:#075a8c; font-size:1.12rem; }
+    p { margin:8px 0 13px; }
+    code, pre { font-family:Consolas, "Courier New", monospace; }
+    code { padding:.08em .3em; background:#edf2f6; border-radius:3px; }
+    pre { margin:10px 0 18px; padding:15px 17px; overflow:auto; color:#f6f8fa; background:var(--code); border-left:5px solid var(--nait-gold); border-radius:4px; line-height:1.43; }
+    pre code { padding:0; color:inherit; background:transparent; }
+    table { width:100%; margin:12px 0 21px; border-collapse:collapse; }
+    th, td { padding:9px 11px; border:1px solid var(--line); text-align:left; vertical-align:top; }
+    th { color:#fff; background:var(--nait-dark-blue); }
+    tr:nth-child(even) td { background:#f7fafc; }
+    ul, ol { margin:8px 0 17px 1.4rem; padding:0; }
+    li { margin:5px 0; }
+    blockquote, .callout { margin:16px 0; padding:11px 16px; background:var(--soft); border-left:5px solid var(--nait-cyan); }
+    .callout strong:first-child { color:var(--nait-dark-blue); }
+    .file-note { background:#fff7e2; border-left-color:var(--nait-gold); }
+    .file-note strong:first-child { color:#684900; }
+    .practice { margin:15px 0 22px; padding:13px 18px; background:#f7fafc; border:1px solid var(--line); border-radius:4px; }
+    .practice h3 { margin-top:0; }
+    .checklist { list-style:none; margin-left:0; }
+    .checklist li { position:relative; padding-left:1.7rem; }
+    .checklist li::before { position:absolute; left:0; content:"☐"; color:var(--nait-blue); font-weight:bold; }
+    @media print {
+      body { background:#fff; }
+      main { max-width:none; margin:0; padding:20px; box-shadow:none; border-top-width:6px; }
+      h2, h3 { break-after:avoid; }
+      table, pre, .callout, .practice { break-inside:avoid; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>SDEV2301 Lesson 13 Student Guide — Introduction to LINQ and Collection Queries</h1>
+  <p class="metadata"><strong>Course version:</strong> Fall 2026 / Winter 2027<br>
+  <strong>Environment:</strong> .NET 10 and Visual Studio 2026<br>
+  <strong>Lesson focus:</strong> <code>Where</code>, <code>Select</code>, and simple method chaining</p>
+
+  <h2>Lesson Goal</h2>
+  <p>Learn how to describe simple collection queries in C# using LINQ.</p>
+  <p>By the end of this lesson, you should be able to:</p>
+  <ul>
+    <li>explain what a short LINQ query does;</li>
+    <li>use <code>Where</code> to filter elements;</li>
+    <li>use <code>Select</code> to transform elements;</li>
+    <li>convert a simple filtering loop into LINQ;</li>
+    <li>predict the values and element type produced by a query; and</li>
+    <li>explain why the original collection is unchanged.</li>
+  </ul>
+
+  <h2>Files Used in This Lesson</h2>
+  <p>Open the supplied solution:</p>
+  <pre><code>L13_LinqIntro.slnx</code></pre>
+  <p>It contains:</p>
+  <pre><code>L13_LinqIntro
+├── Program.cs
+├── Student.cs
+└── Product.cs</code></pre>
+  <div class="callout file-note">
+    <strong>File workflow</strong>
+    <ul>
+      <li>Do <strong>not</strong> create another solution or project.</li>
+      <li>Do <strong>not</strong> create a new source file for each activity.</li>
+      <li>Continue editing <code>Program.cs</code> unless your instructor asks you to inspect <code>Student.cs</code> or <code>Product.cs</code>.</li>
+      <li>Comment out or replace an earlier query when you are ready for the next activity.</li>
+      <li>Keep the supplied <code>students</code> and <code>products</code> collections unchanged.</li>
+    </ul>
+  </div>
+
+  <h2>What Is LINQ?</h2>
+  <p>LINQ stands for <strong>Language Integrated Query</strong>. It provides C# methods for working with data from collections and other sources.</p>
+  <p>In this lesson, LINQ helps us answer questions such as:</p>
+  <ul>
+    <li>Which students have a mark of at least 70?</li>
+    <li>What are the names of those students?</li>
+    <li>Which products belong to the <code>"Tech"</code> category?</li>
+  </ul>
+  <p>LINQ lets us describe the result we want without manually writing every loop and temporary collection.</p>
+
+  <h2>The LINQ Mental Model</h2>
+  <blockquote><strong>Source sequence → query operation → result sequence</strong></blockquote>
+  <p>For a longer chain, ask what sequence exists after every operation:</p>
+  <pre><code>List&lt;Student&gt;
+    → Where(...): IEnumerable&lt;Student&gt;
+    → Select(...): IEnumerable&lt;string&gt;</code></pre>
+  <p>Always ask:</p>
+  <ol>
+    <li>What is the source?</li>
+    <li>What does this operation do?</li>
+    <li>Which values remain or what does each value become?</li>
+    <li>What is the element type now?</li>
+    <li>What is the final result type?</li>
+  </ol>
+
+  <h2>The Two Core Methods</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Question it answers</th><th>What happens to the element type?</th></tr></thead>
+    <tbody>
+      <tr><td><code>Where</code></td><td>Which elements should remain?</td><td>It stays the same.</td></tr>
+      <tr><td><code>Select</code></td><td>What should each element become?</td><td>It may change.</td></tr>
+    </tbody>
+  </table>
+
+  <h3><code>Where</code> Filters Elements</h3>
+  <p><code>Where</code> keeps only the elements that satisfy a condition.</p>
+  <pre><code class="language-csharp">var passingStudents = students
+    .Where(student =&gt; student.Mark &gt;= 70);</code></pre>
+  <ul>
+    <li>Source elements: <code>Student</code></li>
+    <li>Result elements: <code>Student</code></li>
+    <li>Result type: <code>IEnumerable&lt;Student&gt;</code></li>
+  </ul>
+  <p>The expression inside <code>Where</code> must produce <code>true</code> or <code>false</code> for each element.</p>
+
+  <h3><code>Select</code> Transforms Elements</h3>
+  <p><code>Select</code> produces one result value from each source element.</p>
+  <pre><code class="language-csharp">var studentNames = students
+    .Select(student =&gt; student.Name);</code></pre>
+  <ul>
+    <li>Source elements: <code>Student</code></li>
+    <li>Result elements: <code>string</code></li>
+    <li>Result type: <code>IEnumerable&lt;string&gt;</code></li>
+  </ul>
+  <p><code>Select</code> does not mean “choose some elements.” It means “choose what each element becomes.”</p>
+
+  <h2>Reading a Lambda Expression</h2>
+  <pre><code class="language-csharp">student =&gt; student.Mark &gt;= 70</code></pre>
+  <p>Read this as:</p>
+  <blockquote>For this student, determine whether the student’s mark is at least 70.</blockquote>
+  <pre><code class="language-csharp">student =&gt; student.Name</code></pre>
+  <p>Read this as:</p>
+  <blockquote>For this student, produce the student’s name.</blockquote>
+  <p>The variable name on the left of <code>=&gt;</code> represents one element from the sequence.</p>
+
+  <h2>From a Loop to LINQ</h2>
+  <h3>Familiar loop</h3>
+  <pre><code class="language-csharp">var numbers = new List&lt;int&gt; { 1, 2, 3, 4, 5, 6 };
+var evens = new List&lt;int&gt;();
+
+foreach (var number in numbers)
+{
+    if (number % 2 == 0)
+    {
+        evens.Add(number);
+    }
+}</code></pre>
+  <h3>Equivalent LINQ query</h3>
+  <pre><code class="language-csharp">var evens = numbers
+    .Where(number =&gt; number % 2 == 0);</code></pre>
+  <p>Both approaches can produce the values <code>2</code>, <code>4</code>, and <code>6</code>. The loop describes the individual steps. The LINQ query describes which values should remain.</p>
+  <p>LINQ does not replace every loop. It is especially useful when the task is a collection query such as filtering or transforming elements.</p>
+
+  <h2>Combining <code>Where</code> and <code>Select</code></h2>
+  <p>To obtain the names of passing students:</p>
+  <pre><code class="language-csharp">var passingNames = students
+    .Where(student =&gt; student.Mark &gt;= 70)
+    .Select(student =&gt; student.Name);</code></pre>
+  <table>
+    <thead><tr><th>Stage</th><th>Meaning</th><th>Element type</th></tr></thead>
+    <tbody>
+      <tr><td><code>students</code></td><td>Start with every student</td><td><code>Student</code></td></tr>
+      <tr><td><code>.Where(...)</code></td><td>Keep students whose mark is at least 70</td><td><code>Student</code></td></tr>
+      <tr><td><code>.Select(...)</code></td><td>Produce the name of each remaining student</td><td><code>string</code></td></tr>
+    </tbody>
+  </table>
+  <p>The final result type is <code>IEnumerable&lt;string&gt;</code>.</p>
+
+  <h2>LINQ Does Not Modify the Source</h2>
+  <pre><code class="language-csharp">var passingStudents = students
+    .Where(student =&gt; student.Mark &gt;= 70);</code></pre>
+  <p>This query creates a result sequence. It does not remove failing students from <code>students</code>. The original collection still contains all of its original elements.</p>
+  <p>This is different from calling a method whose purpose is to modify a collection, such as <code>Remove</code> or <code>RemoveAll</code>.</p>
+
+  <h2>Do You Need <code>ToList()</code>?</h2>
+  <p>Not every query needs <code>ToList()</code>. For the basic activities in this lesson, you can store and enumerate the <code>IEnumerable&lt;T&gt;</code> returned by <code>Where</code> and <code>Select</code>:</p>
+  <pre><code class="language-csharp">IEnumerable&lt;string&gt; names = students
+    .Select(student =&gt; student.Name);</code></pre>
+  <p>Use <code>ToList()</code> when the requirement specifically needs a <code>List&lt;T&gt;</code> or a separate list at that point in the program:</p>
+  <pre><code class="language-csharp">List&lt;string&gt; names = students
+    .Select(student =&gt; student.Name)
+    .ToList();</code></pre>
+  <p>Do not add <code>ToList()</code> automatically after every query.</p>
+
+  <h2>Predict Before You Run</h2>
+  <p>For each query, identify its purpose, output values, and element type before running it.</p>
+  <pre><code class="language-csharp">var query1 = students
+    .Where(student =&gt; student.Mark &lt; 70);
+
+var query2 = students
+    .Select(student =&gt; student.Mark);
+
+var query3 = products
+    .Where(product =&gt; product.Price &lt;= 15m)
+    .Select(product =&gt; product.Name);</code></pre>
+  <ol>
+    <li>Which elements remain?</li>
+    <li>Does the element type change?</li>
+    <li>What is the final result type?</li>
+    <li>Is the original collection modified?</li>
+  </ol>
+
+  <h2>Practice Activities</h2>
+  <div class="practice">
+    <h3>Student Queries</h3>
+    <p><strong>File:</strong> Continue editing <code>L13_LinqIntro/Program.cs</code>. Do not create a new source file.</p>
+    <ol>
+      <li>Names of students with marks of at least 80.</li>
+      <li>Marks of students who are failing with a mark below 70.</li>
+      <li>Names containing at least five characters.</li>
+    </ol>
+  </div>
+  <div class="practice">
+    <h3>Product Queries</h3>
+    <p><strong>File:</strong> Continue editing the same <code>Program.cs</code> file and use the supplied <code>products</code> collection.</p>
+    <ol>
+      <li>Names of products priced above <code>$20</code>.</li>
+      <li>Categories of products priced at or below <code>$10</code>.</li>
+      <li>Uppercase names of products in the <code>"School"</code> category.</li>
+    </ol>
+  </div>
+  <p>For each practice query, use LINQ method syntax, predict the result’s element type before running it, and keep the original collection unchanged. Avoid <code>foreach</code> for these particular activities.</p>
+
+  <h2>Common Mistakes</h2>
+  <h3>Using <code>Select</code> when you need <code>Where</code></h3>
+  <p>Ask whether you want fewer elements or a new value from every element.</p>
+  <ul><li>Fewer elements → <code>Where</code></li><li>A transformed value from every element → <code>Select</code></li></ul>
+  <h3>Forgetting that the result type can change</h3>
+  <p>After <code>Select(student =&gt; student.Name)</code>, the sequence contains <code>string</code> values, not <code>Student</code> objects.</p>
+  <h3>Writing the methods in the wrong order</h3>
+  <p>Read the chain from left to right and confirm that each operation receives the type it needs.</p>
+  <h3>Expecting the original collection to change</h3>
+  <p>The query creates a result sequence. It does not automatically add, remove, or replace elements in the source.</p>
+  <h3>Creating a new project or source file for every activity</h3>
+  <p>Continue using the supplied solution and <code>Program.cs</code> throughout this lesson.</p>
+
+  <h2>Topics for Later Lessons</h2>
+  <p>You are not expected to use these topics yet:</p>
+  <ul>
+    <li>sorting with <code>OrderBy</code>, <code>OrderByDescending</code>, or <code>ThenBy</code>;</li>
+    <li>grouping with <code>GroupBy</code>;</li>
+    <li>element operators such as <code>First</code> or <code>Single</code>;</li>
+    <li>aggregate methods;</li>
+    <li>query-expression syntax;</li>
+    <li>database or EF Core queries;</li>
+    <li>repository or query-service classes; or</li>
+    <li>unit testing LINQ queries.</li>
+  </ul>
+  <p>Focus on reading and writing clear <code>Where</code> and <code>Select</code> chains.</p>
+
+  <h2>Quick Reference</h2>
+  <pre><code class="language-csharp">// Keep matching objects.
+var passingStudents = students
+    .Where(student =&gt; student.Mark &gt;= 70);
+
+// Produce one property value from every object.
+var names = students
+    .Select(student =&gt; student.Name);
+
+// Filter first, then produce a different result shape.
+var passingNames = students
+    .Where(student =&gt; student.Mark &gt;= 70)
+    .Select(student =&gt; student.Name);</code></pre>
+  <blockquote><strong><code>Where</code> decides which elements stay. <code>Select</code> decides what each element becomes.</strong></blockquote>
+
+  <h2>Self-Check</h2>
+  <ul class="checklist">
+    <li>I can identify the source sequence.</li>
+    <li>I can explain a predicate in plain language.</li>
+    <li>I use <code>Where</code> when I need to filter elements.</li>
+    <li>I use <code>Select</code> when I need to transform elements.</li>
+    <li>I can trace the element type after each method.</li>
+    <li>I can predict the result before running the code.</li>
+    <li>I understand that a LINQ query does not modify the source collection.</li>
+    <li>I know that “no <code>foreach</code>” is a constraint for today’s LINQ practice, not a rule for every C# program.</li>
+  </ul>
+
+  <h2>Optional Take-Home Practice</h2>
+  <p>Complete the <strong>LINQ Basics – Pokémon</strong> practice after class. It reinforces the same <code>Where</code> and <code>Select</code> skills using a different domain.</p>
+  <p>Leave the longer <code>PokemonQueryService</code> exercise until sorting and additional LINQ operators have been introduced.</p>
+</main>
+</body>
+</html>
